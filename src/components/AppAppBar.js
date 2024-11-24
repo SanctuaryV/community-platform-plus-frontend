@@ -110,6 +110,7 @@ export default function AppAppBar() {
               PaperProps={{
                 sx: {
                   top: 'var(--template-frame-height, 0px)',
+                  elevation: 0, // หรือปรับให้เหมาะสม
                 },
               }}
             >

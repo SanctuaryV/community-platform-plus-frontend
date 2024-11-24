@@ -67,6 +67,7 @@ export default function ColorModeIconDropdown(props) {
             variant: 'outlined',
             sx: {
               my: '4px',
+              elevation: 3,  // กำหนดค่า elevation ที่ต้องการ
             },
           },
         }}

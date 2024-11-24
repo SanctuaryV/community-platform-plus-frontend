@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -48,7 +49,7 @@ export default function ProfileCard() {
         const following = followingIds.map(id => ({ id: id.toString() }));  // แปลง id ให้เป็นสตริง
 
         setUserData({
-          avatar_url: response.data.user.avatar_url || null,
+          avatar_url: response.data.user.avatar_url || '',
           name: response.data.user.name || 'User Name',
           email: response.data.user.email || 'User Email',
           age: response.data.user.age || 'N/A',
@@ -70,7 +71,7 @@ export default function ProfileCard() {
         setLoading(false);
       }
     };
-    
+
 
     fetchData();
   }, [userId]);
@@ -120,7 +121,9 @@ export default function ProfileCard() {
   const currentUserId = localStorage.getItem('user_id'); // user_id จาก localStorage
 
   if (loading) {
-    return <Typography>Loading...</Typography>;
+    return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
+      <CircularProgress />
+    </Box>
   }
 
   const { avatar_url, name, email, age, occupation, bio, followers_count, following_count } = userData;
@@ -146,7 +149,7 @@ export default function ProfileCard() {
       >
         <Avatar
           alt={name}
-          src={avatar_url || 'default-avatar-url'}
+          src={avatar_url || ''}
           sx={{
             width: 120,
             height: 120,

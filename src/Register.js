@@ -125,10 +125,10 @@ export default function SignUp(props) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'ok') {
-            console.log('Login successful');
+            console.log('Register successful');
             window.location = '/Login'
         } else {
-            console.log('Login failed')
+            console.log('Register failed')
         }
     })
     .catch((error) => {

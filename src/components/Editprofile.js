@@ -63,11 +63,12 @@ export default function EditProfile() {
         const formDataToSubmit = new FormData();
         formDataToSubmit.append('name', formData.name);
         formDataToSubmit.append('email', formData.email);
-        formDataToSubmit.append('age', formData.age);
+        formDataToSubmit.append('age', formData.age ? formData.age : '0'); // ใช้ 0 ถ้าค่าว่าง
         formDataToSubmit.append('occupation', formData.occupation);
         formDataToSubmit.append('bio', formData.bio);
+    
         if (formData.avatar) {
-            formDataToSubmit.append('avatar', formData.avatar); // ส่งไฟล์จริงๆ
+            formDataToSubmit.append('avatar', formData.avatar);
         }
     
         try {
@@ -79,10 +80,10 @@ export default function EditProfile() {
                 alert('Profile updated successfully!');
                 navigate(`/profile/${userId}`);
     
-                // อัปเดต localStorage
+                // Update localStorage
                 localStorage.setItem('name', formData.name);
                 localStorage.setItem('email', formData.email);
-                localStorage.setItem('age', formData.age);
+                localStorage.setItem('age', formData.age ? formData.age : '0'); // Update localStorage ด้วย 0 ถ้าค่าว่าง
             }
         } catch (error) {
             console.error('Error updating profile:', error);

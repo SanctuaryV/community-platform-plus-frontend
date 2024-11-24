@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -71,7 +72,9 @@ export default function Profilelist() {
       />
 
       {loading ? (
-        <Typography variant="h6">Loading...</Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
+        <CircularProgress />
+      </Box>
       ) : error ? (
         <Typography variant="h6" color="error">{error}</Typography>
       ) : (
@@ -94,7 +97,7 @@ export default function Profilelist() {
                 >
                   <Avatar
                     alt={user.name}
-                    src={user.avatar_url || 'default-avatar-url'}
+                    src={user.avatar_url || ''}
                     sx={{ width: 120, height: 120, margin: '0 auto', border: '4px solid #ddd' }}
                   />
                   <Typography variant="h6" sx={{ marginTop: 2 }}>{user.name}</Typography>

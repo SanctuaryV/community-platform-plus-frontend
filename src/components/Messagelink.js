@@ -4,7 +4,7 @@ import IconButton from '@mui/material/IconButton';
 
 export default function MessageLink() {
     return (
-        <IconButton href='/Message' sx={(theme) => ({
+        <IconButton href='/message' sx={(theme) => ({
             verticalAlign: 'bottom',
             display: 'inline-flex',
             width: { xs: '2.5rem', sm: '2.25rem', md: '2.25rem' },
