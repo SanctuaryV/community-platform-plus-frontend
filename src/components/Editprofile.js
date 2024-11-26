@@ -72,7 +72,7 @@ export default function EditProfile() {
         }
     
         try {
-            const response = await axios.put(`/edit-profile/${userId}`, formDataToSubmit, {
+            const response = await axios.put(`https://community-platform-backend-34e598655132.herokuapp.com/edit-profile/${userId}`, formDataToSubmit, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
     
