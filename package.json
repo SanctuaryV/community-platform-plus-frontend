@@ -45,7 +45,7 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://community-platform-plus-backend.onrender.com",
+  "proxy": "https://community-platform-backend-34e598655132.herokuapp.com/",
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }
