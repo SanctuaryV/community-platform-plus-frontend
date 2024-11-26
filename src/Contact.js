@@ -5,10 +5,9 @@ import AppAppBar from './components/AppAppBar';
 import Footer from './components/Footer';
 import AppTheme from './shared-theme/AppTheme';
 import Authorization from './components/Authorization';
-import Policylist from './components/Policylist';
+import Contactlist from './components/Contactlist';
 
-
-export default function Policy(props) {
+export default function Contact(props) {
 
   return (
     <AppTheme {...props}>
@@ -20,7 +19,7 @@ export default function Policy(props) {
         component="main"
         sx={{ display: 'flex', flexDirection: 'column', my: 16, gap: 4 }}
       >
-        <Policylist />
+        <Contactlist />
       </Container>
       <Footer />
     </AppTheme>

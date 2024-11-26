@@ -105,7 +105,7 @@ export default function Profilelist() {
                   <Typography variant="body2" color="textSecondary" sx={{ marginTop: 1 }}>
                     Joined on: {new Date(user.created_at).toLocaleDateString()}
                   </Typography>
-                  <Grid container spacing={2} sx={{ marginTop: 2 }}>
+                  <Grid container sx={{ marginTop: 2 }}>
                     <Grid item xs={4}>
                       <Typography variant="body2">Posts</Typography>
                       <Typography variant="body2">{user.posts_count}</Typography>

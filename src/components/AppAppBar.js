@@ -67,22 +67,13 @@ export default function AppAppBar() {
             <LogoNav />
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
               <Button variant="text" color="info" size="small" href='/'>
-                Features
+                Home
               </Button>
-              <Button variant="text" color="info" size="small" href='/'>
-                Testimonials
-              </Button>
-              <Button variant="text" color="info" size="small" href='/'>
-                Highlights
-              </Button>
-              <Button variant="text" color="info" size="small" href='/'>
-                Pricing
+              <Button variant="text" color="info" size="small" href='/community'>
+                Community
               </Button>
               <Button variant="text" color="info" size="small" href='/profilelist'>
                 Profilelist
-              </Button>
-              <Button variant="text" color="info" size="small" href='/'>
-                Blog
               </Button>
             </Box>
           </Box>
@@ -127,32 +118,17 @@ export default function AppAppBar() {
                 </Box>
                 <MenuItem>
                   <Button sx={{ display: 'flex', justifyContent: 'flex-start' }} href='/'>
-                    Features
+                    Home
                   </Button>
                 </MenuItem>
-                <MenuItem>
-                  <Button sx={{ display: 'flex', justifyContent: 'flex-start' }} href='/'>
-                    Testimonials
-                  </Button>
-                </MenuItem>
-                <MenuItem>
-                  <Button sx={{ display: 'flex', justifyContent: 'flex-start' }} href='/'>
-                    Highlights
-                  </Button>
-                </MenuItem>
-                <MenuItem>
-                  <Button sx={{ display: 'flex', justifyContent: 'flex-start' }} href='/'>
-                    Pricing
+                <MenuItem >
+                  <Button sx={{ display: 'flex', justifyContent: 'flex-start' }} href='/community'>
+                    Community
                   </Button>
                 </MenuItem>
                 <MenuItem>
                   <Button sx={{ display: 'flex', justifyContent: 'flex-start' }} href='/profilelist'>
                     Profilelist
-                  </Button>
-                </MenuItem>
-                <MenuItem >
-                  <Button sx={{ display: 'flex', justifyContent: 'flex-start' }} href='/'>
-                    Blog
                   </Button>
                 </MenuItem>
                 <Divider sx={{ my: 3 }} />

@@ -1,15 +1,13 @@
-import React from 'react';
+import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import AppAppBar from './components/AppAppBar';
 import Footer from './components/Footer';
 import AppTheme from './shared-theme/AppTheme';
 import Authorization from './components/Authorization';
-import Policylist from './components/Policylist';
+import Postlist from './components/Postlist';
 
-
-export default function Policy(props) {
-
+export default function Post(props) {
   return (
     <AppTheme {...props}>
       <Authorization />
@@ -20,7 +18,7 @@ export default function Policy(props) {
         component="main"
         sx={{ display: 'flex', flexDirection: 'column', my: 16, gap: 4 }}
       >
-        <Policylist />
+        <Postlist /> 
       </Container>
       <Footer />
     </AppTheme>

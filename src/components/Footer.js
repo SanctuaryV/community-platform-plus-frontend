@@ -42,13 +42,13 @@ export default function Footer() {
             <Typography sx={{ display: 'inline', mx: 0.5, opacity: 0.5 }}>
               &nbsp;•&nbsp;
             </Typography>
-            <Link color="text.secondary" variant="body2" /*href="#"*/>
+            <Link color="text.secondary" variant="body2" href="/service">
               Terms of Service
             </Link>
             <Typography sx={{ display: 'inline', mx: 0.5, opacity: 0.5 }}>
               &nbsp;•&nbsp;
             </Typography>
-            <Link color="text.secondary" variant="body2" /*href="#"*/>
+            <Link color="text.secondary" variant="body2" href="/contact">
               Contact us
             </Link>
             <Copyright />
@@ -62,7 +62,7 @@ export default function Footer() {
             <IconButton
               color="inherit"
               size="small"
-              href="https://github.com/mui"
+              href="https://github.com/SanctuaryV/community-platform-plus-frontend"
               aria-label="GitHub"
               sx={{ alignSelf: 'center' }}
             >
@@ -71,7 +71,7 @@ export default function Footer() {
             <IconButton
               color="inherit"
               size="small"
-              href="https://x.com/MaterialUI"
+              ///href="https://x.com/MaterialUI"
               aria-label="X"
               sx={{ alignSelf: 'center' }}
             >
