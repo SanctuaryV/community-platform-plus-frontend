@@ -115,7 +115,7 @@ export default function SignUp(props) {
       password: data.get('password'),
     }
 
-    fetch('https://community-platform-backend-34e598655132.herokuapp.com/Register',{
+    fetch('https://community-platform-plus-backend.onrender.com/Register',{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'  
