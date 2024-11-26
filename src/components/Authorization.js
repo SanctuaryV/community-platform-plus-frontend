@@ -10,7 +10,7 @@ export default function Authorization() {
         }
 
         // ทำการตรวจสอบการยืนยันตัวตน
-        fetch('https://community-platform-backend-34e598655132.herokuapp.com/authen', {
+        fetch('https://community-platform-plus-backend.onrender.com/authen', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

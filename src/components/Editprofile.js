@@ -26,7 +26,7 @@ export default function EditProfile() {
         const fetchUserData = async () => {
             setLoading(true); // ตั้งค่า loading เป็น true ก่อนที่จะเริ่มดึงข้อมูล
             try {
-                const response = await axios.get(`https://community-platform-backend-34e598655132.herokuapp.com/profile/${userId}`);
+                const response = await axios.get(`https://community-platform-plus-backend.onrender.com/profile/${userId}`);
                 setFormData({
                     name: response.data.user.name || '',
                     email: response.data.user.email || '',
@@ -72,7 +72,7 @@ export default function EditProfile() {
         }
     
         try {
-            const response = await axios.put(`https://community-platform-backend-34e598655132.herokuapp.com/edit-profile/${userId}`, formDataToSubmit, {
+            const response = await axios.put(`https://community-platform-plus-backend.onrender.com/edit-profile/${userId}`, formDataToSubmit, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
     

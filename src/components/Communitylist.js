@@ -16,7 +16,7 @@ export default function Community() {
   const fetchGroups = async () => {
     setLoading(true);
     try {
-      const response = await fetch('https://community-platform-backend-34e598655132.herokuapp.com/getgroups', {
+      const response = await fetch('https://community-platform-plus-backend.onrender.com/getgroups', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export default function Community() {
 
     setCreating(true);
     try {
-      const response = await fetch('https://community-platform-backend-34e598655132.herokuapp.com/creategroups', {
+      const response = await fetch('https://community-platform-plus-backend.onrender.com/creategroups', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export default function Community() {
   const handleDeleteGroup = async (groupId) => {
     if (window.confirm('Are you sure you want to delete this group?')) {
       try {
-        const response = await fetch('https://community-platform-backend-34e598655132.herokuapp.com/deletegroup', {
+        const response = await fetch('https://community-platform-plus-backend.onrender.com/deletegroup', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
