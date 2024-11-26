@@ -88,7 +88,7 @@ export default function SignIn(props) {
             password: data.get('password'),
         }
 
-        fetch('/Login', {
+        fetch('https://community-platform-backend-34e598655132.herokuapp.com/Login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

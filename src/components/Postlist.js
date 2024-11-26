@@ -25,7 +25,7 @@ export default function CommunityPage() {
     const fetchPosts = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await fetch(`/${communityId}`);
+            const response = await fetch(`https://community-platform-backend-34e598655132.herokuapp.com/${communityId}`);
             if (response.ok) {
                 const data = await response.json();
                 setPosts(data);
@@ -74,7 +74,7 @@ export default function CommunityPage() {
                 formData.append('image', image); // Add image to request if exists
             }
 
-            const response = await fetch('/createPost', {
+            const response = await fetch('https://community-platform-backend-34e598655132.herokuapp.com/createPost', {
                 method: 'POST',
                 body: formData,
             });
@@ -102,7 +102,7 @@ export default function CommunityPage() {
     const handleDeletePost = async (postId) => {
         if (window.confirm('Are you sure you want to delete this post?')) {
             try {
-                const response = await fetch(`/deletePost`, {
+                const response = await fetch(`https://community-platform-backend-34e598655132.herokuapp.com/deletePost`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ post_id: postId }),
@@ -148,7 +148,7 @@ export default function CommunityPage() {
                 formData.append('image', editedImage);
             }
 
-            const response = await fetch('/updatePost', {
+            const response = await fetch('https://community-platform-backend-34e598655132.herokuapp.com/updatePost', {
                 method: 'POST',
                 body: formData,
             });
@@ -216,7 +216,7 @@ export default function CommunityPage() {
     // Handle Like Post
     /*const handleLikePost = async (postId) => {
         try {
-            const response = await fetch(`/addLike`, {
+            const response = await fetch(`https://community-platform-backend-34e598655132.herokuapp.com/addLike`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ post_id: postId, user_id: localStorage.getItem('user_id') }),
@@ -236,7 +236,7 @@ export default function CommunityPage() {
         if (!newComment[postId]) return;
 
         try {
-            const response = await fetch(`/addComment`, {
+            const response = await fetch(`https://community-platform-backend-34e598655132.herokuapp.com/addComment`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

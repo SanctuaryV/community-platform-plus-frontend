@@ -12,7 +12,7 @@ export default function MainContent() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.post('/main'); // ดึงข้อมูลโพสต์จาก backend
+        const response = await axios.post('https://community-platform-backend-34e598655132.herokuapp.com/main'); // ดึงข้อมูลโพสต์จาก backend
         setPosts(response.data);
         setIsLoading(false);
       } catch (error) {

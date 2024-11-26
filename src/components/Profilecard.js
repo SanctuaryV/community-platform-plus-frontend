@@ -36,7 +36,7 @@ export default function ProfileCard() {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`/profile/${userId}`, {
+        const response = await axios.get(`https://community-platform-backend-34e598655132.herokuapp.com/profile/${userId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 

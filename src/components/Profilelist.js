@@ -20,7 +20,7 @@ export default function Profilelist() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/users', {
+        const response = await fetch('https://community-platform-backend-34e598655132.herokuapp.com/users', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
