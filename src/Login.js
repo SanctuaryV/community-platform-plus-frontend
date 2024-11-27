@@ -88,7 +88,7 @@ export default function SignIn(props) {
             password: data.get('password'),
         }
 
-        fetch('https://community-platform-plus-backend.onrender.com/Login', {
+        fetch('/Login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

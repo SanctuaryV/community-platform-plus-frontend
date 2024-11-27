@@ -25,7 +25,7 @@ export default function CommunityPage() {
     const fetchPosts = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await fetch(`https://community-platform-plus-backend.onrender.com/${communityId}`);
+            const response = await fetch(`/${communityId}`);
             if (response.ok) {
                 const data = await response.json();
                 setPosts(data);
@@ -74,7 +74,7 @@ export default function CommunityPage() {
                 formData.append('image', image); // Add image to request if exists
             }
 
-            const response = await fetch('https://community-platform-plus-backend.onrender.com/createPost', {
+            const response = await fetch('/createPost', {
                 method: 'POST',
                 body: formData,
             });
@@ -102,7 +102,7 @@ export default function CommunityPage() {
     const handleDeletePost = async (postId) => {
         if (window.confirm('Are you sure you want to delete this post?')) {
             try {
-                const response = await fetch(`https://community-platform-plus-backend.onrender.com/deletePost`, {
+                const response = await fetch(`/deletePost`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ post_id: postId }),
@@ -148,7 +148,7 @@ export default function CommunityPage() {
                 formData.append('image', editedImage);
             }
 
-            const response = await fetch('https://community-platform-plus-backend.onrender.com/updatePost', {
+            const response = await fetch('/updatePost', {
                 method: 'POST',
                 body: formData,
             });
@@ -216,7 +216,7 @@ export default function CommunityPage() {
     // Handle Like Post
     /*const handleLikePost = async (postId) => {
         try {
-            const response = await fetch(`https://community-platform-plus-backend.onrender.com/addLike`, {
+            const response = await fetch(`/addLike`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ post_id: postId, user_id: localStorage.getItem('user_id') }),
@@ -236,7 +236,7 @@ export default function CommunityPage() {
         if (!newComment[postId]) return;
 
         try {
-            const response = await fetch(`https://community-platform-plus-backend.onrender.com/addComment`, {
+            const response = await fetch(`/addComment`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -260,12 +260,10 @@ export default function CommunityPage() {
         }
     };
 
-
     // Load posts when component mounts
     useEffect(() => {
         fetchPosts();
     }, [fetchPosts]);
-
 
     return (
         <Box sx={{ padding: 3 }}>
@@ -470,11 +468,11 @@ export default function CommunityPage() {
                                         [...comments[post.id]] // สร้างสำเนาอาร์เรย์เพื่อลดผลกระทบข้างเคียง
                                             .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) // จัดเรียงจากเก่าไปใหม่
                                             .map((comment, index) => {
-                                                // Format the time for the comment
+                                                // แปลง comment.created_at เป็น Date
                                                 const commentTime = new Date(comment.created_at);
-                                                const hours = commentTime.getHours().toString().padStart(2, '0');
-                                                const minutes = commentTime.getMinutes().toString().padStart(2, '0');
-                                                const time = `${hours}:${minutes}`;
+
+                                                // แสดงเวลาในรูปแบบ hh:mm
+                                                const time = commentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                                                 return (
                                                     <Box key={index} sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
@@ -487,7 +485,7 @@ export default function CommunityPage() {
                                                             {comment.content} {/* Comment content */}
                                                         </Typography>
                                                         <Typography variant="body2" color="textSecondary">
-                                                            {/* Time */}
+                                                            {/* แสดงเวลาที่เป็น ชั่วโมง : นาที */}
                                                             {time}
                                                         </Typography>
                                                     </Box>
@@ -499,7 +497,6 @@ export default function CommunityPage() {
                                         </Typography>
                                     )}
                                 </Box>
-
 
 
                                 {/* เพิ่มส่วนของปุ่มไลค์และคอมเมนต์ */}
@@ -516,7 +513,7 @@ export default function CommunityPage() {
                                         {/* จำนวนคอมเมนต์ */}
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                             <ChatBubble color="action" />
-                                            <Typography>{(comments[post.id]?.length || post.comment_count || 0) }</Typography>
+                                            <Typography>{(comments[post.id]?.length || post.comment_count || 0)}</Typography>
                                         </Box>
                                     </Box>
 

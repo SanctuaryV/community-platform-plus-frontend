@@ -36,7 +36,7 @@ export default function ProfileCard() {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`https://community-platform-plus-backend.onrender.com/profile/${userId}`, {
+        const response = await axios.get(`/profile/${userId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 

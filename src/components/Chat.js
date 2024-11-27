@@ -21,7 +21,7 @@ export default function ChatTabs() {
 
   const getOrCreateRoom = async (userId, otherUserId) => {
     try {
-      const response = await fetch('https://community-platform-plus-backend.onrender.com/room', {
+      const response = await fetch('/room', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ export default function ChatTabs() {
       // ดึงข้อความเก่าจากฐานข้อมูลเมื่อเข้าห้องแชท
       async function fetchMessages() {
         try {
-          const response = await fetch('https://community-platform-plus-backend.onrender.com/messages', {
+          const response = await fetch('/messages', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export default function ChatTabs() {
       try {
         const userId = localStorage.getItem('user_id'); // ดึง userId จาก localStorage
 
-        const response = await fetch('https://community-platform-plus-backend.onrender.com/following', { // ส่งข้อมูลไปยัง /api/following
+        const response = await fetch('/following', { // ส่งข้อมูลไปยัง /api/following
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

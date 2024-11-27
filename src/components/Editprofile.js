@@ -26,7 +26,7 @@ export default function EditProfile() {
         const fetchUserData = async () => {
             setLoading(true); // ตั้งค่า loading เป็น true ก่อนที่จะเริ่มดึงข้อมูล
             try {
-                const response = await axios.get(`https://community-platform-plus-backend.onrender.com/profile/${userId}`);
+                const response = await axios.get(`/profile/${userId}`);
                 setFormData({
                     name: response.data.user.name || '',
                     email: response.data.user.email || '',
@@ -72,18 +72,20 @@ export default function EditProfile() {
         }
     
         try {
-            const response = await axios.put(`https://community-platform-plus-backend.onrender.com/edit-profile/${userId}`, formDataToSubmit, {
+            const response = await axios.put(`/edit-profile/${userId}`, formDataToSubmit, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
     
             if (response.status === 200) {
                 alert('Profile updated successfully!');
                 navigate(`/profile/${userId}`);
+                const avatarUrl = response.data.avatar;
     
                 // Update localStorage
                 localStorage.setItem('name', formData.name);
                 localStorage.setItem('email', formData.email);
                 localStorage.setItem('age', formData.age ? formData.age : '0'); // Update localStorage ด้วย 0 ถ้าค่าว่าง
+                localStorage.setItem('avatar_url',avatarUrl);
             }
         } catch (error) {
             console.error('Error updating profile:', error);

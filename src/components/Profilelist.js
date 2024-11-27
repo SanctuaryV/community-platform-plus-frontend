@@ -20,7 +20,7 @@ export default function Profilelist() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://community-platform-plus-backend.onrender.com/users', {
+        const response = await fetch('/users', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

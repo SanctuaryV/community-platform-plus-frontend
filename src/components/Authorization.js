@@ -10,7 +10,7 @@ export default function Authorization() {
         }
 
         // ทำการตรวจสอบการยืนยันตัวตน
-        fetch('https://community-platform-plus-backend.onrender.com/authen', {
+        fetch('/authen', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

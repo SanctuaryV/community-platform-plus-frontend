@@ -115,7 +115,7 @@ export default function SignUp(props) {
       password: data.get('password'),
     }
 
-    fetch('https://community-platform-plus-backend.onrender.com/Register',{
+    fetch('/Register',{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'  
