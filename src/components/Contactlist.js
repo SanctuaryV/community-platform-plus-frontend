@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Grid, Card, CardContent, Avatar } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, Avatar, Button } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import PersonIcon from '@mui/icons-material/Person';
 
@@ -101,6 +101,17 @@ const ContactUs = () => {
         ))}
       </Grid>
 
+      {/* Button to Google Forms */}
+      <Button
+        variant="contained"
+        color="primary"
+        href="https://docs.google.com/forms/d/1tMXkNy5nb5XF5ZCQYzgRJ2oQkegEeRdwActIrKfzSok/edit"
+        target="_blank"
+        sx={{ mt: 4 }}
+      >
+        Fill Out Feedback Form
+      </Button>
+
       {/* Footer */}
       <Box
         sx={{
@@ -110,8 +121,7 @@ const ContactUs = () => {
           borderTop: '1px solid #ddd',
           paddingTop: 2,
         }}
-      >
-      </Box>
+      ></Box>
     </Box>
   );
 };

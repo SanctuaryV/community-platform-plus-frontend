@@ -22,8 +22,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "HOST=0.0.0.0 react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
+    "coverage": "npm test -- --coverage",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -47,6 +48,15 @@
   },
   "proxy": "http://192.168.1.101:8000",
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.25.9",
+    "babel-jest": "^29.7.0",
+    "jest": "^27.5.1"
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "/node_modules/(?!axios)/"
+    ]
   }
 }
