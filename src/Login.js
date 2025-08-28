@@ -15,6 +15,7 @@ import { styled } from '@mui/material/styles';
 import ForgotPassword from './ForgotPassword';
 import { LogoIcon } from './CustomIcons';
 import AppTheme from './shared-theme/AppTheme';
+import { axiosInstance, ENDPOINTS } from './api';
 import ColorModeSelect from './shared-theme/ColorModeSelect';
 import Alert from '@mui/material/Alert';
 
@@ -88,15 +89,9 @@ export default function SignIn(props) {
             password: data.get('password'),
         }
 
-        fetch('/Login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(jsonData),
-        })
-            .then(response => response.json())
-            .then(data => {
+        axiosInstance.post(ENDPOINTS.LOGIN, jsonData)
+            .then(response => {
+                const data = response.data;
                 if (data.status === 'ok') {
                     console.log('Login successful');
                     localStorage.setItem('token', data.token);

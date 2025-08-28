@@ -6,7 +6,7 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
-import axios from 'axios';
+import { axiosInstance } from '../api';
 
 export default function EditProfile() {
     const { userId } = useParams();
@@ -26,7 +26,7 @@ export default function EditProfile() {
         const fetchUserData = async () => {
             setLoading(true); // ตั้งค่า loading เป็น true ก่อนที่จะเริ่มดึงข้อมูล
             try {
-                const response = await axios.get(`/profile/${userId}`);
+                const response = await axiosInstance.get(`/profile/${userId}`);
                 setFormData({
                     name: response.data.user.name || '',
                     email: response.data.user.email || '',
@@ -72,7 +72,7 @@ export default function EditProfile() {
         }
     
         try {
-            const response = await axios.put(`/edit-profile/${userId}`, formDataToSubmit, {
+            const response = await axiosInstance.put(`/edit-profile/${userId}`, formDataToSubmit, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
     

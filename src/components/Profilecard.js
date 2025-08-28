@@ -7,7 +7,7 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import axios from 'axios';
+import { axiosInstance } from '../api';
 
 export default function ProfileCard() {
   const { userId } = useParams(); // ดึง userId จาก URL
@@ -36,7 +36,7 @@ export default function ProfileCard() {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`/profile/${userId}`, {
+  const response = await axiosInstance.get(`/profile/${userId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -79,7 +79,7 @@ export default function ProfileCard() {
   const handleFollow = async () => {
     try {
       const currentUserId = localStorage.getItem('user_id'); // user_id จาก localStorage
-      const response = await axios.post(
+  const response = await axiosInstance.post(
         `/follow/${userId}`,
         { followerId: currentUserId, followeeId: userId }  // ส่งข้อมูลที่ต้องการ
       );
@@ -98,7 +98,7 @@ export default function ProfileCard() {
   const handleUnfollow = async () => {
     const currentUserId = localStorage.getItem('user_id'); // user_id จาก localStorage
     try {
-      const response = await axios.post(
+  const response = await axiosInstance.post(
         `/unfollow/${userId}`,  // ส่งไปที่ endpoint ของ unfollow
         { followerId: currentUserId }  // ส่ง body เพื่อระบุผู้ติดตาม
       );

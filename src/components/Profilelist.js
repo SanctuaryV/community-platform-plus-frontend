@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { axiosInstance, ENDPOINTS } from '../api';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -20,24 +21,14 @@ export default function Profilelist() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/users', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-
-        const data = await response.json();
+        const response = await axiosInstance.post(ENDPOINTS.USERS, { action: 'fetch' });
+        const data = response.data;
 
         // Filter data to exclude the current user
-        const filteredData = data.users.filter(user => String(user.user_id) !== String(currentUserId)); // Convert both to strings
+        const filtered = (data.users || data).filter(user => String(user.user_id) !== String(currentUserId));
 
-        setUserData(filteredData); // Update the state with the filtered data
-        setFilteredData(filteredData); // Set filtered data to be displayed
+        setUserData(filtered); // Update the state with the filtered data
+        setFilteredData(filtered); // Set filtered data to be displayed
       } catch (error) {
         console.error('Error fetching user data:', error);
         setError('Error fetching data. Please try again later.');

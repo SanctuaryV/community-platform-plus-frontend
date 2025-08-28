@@ -13,6 +13,7 @@ import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import AppTheme from './shared-theme/AppTheme';
+import { axiosInstance, ENDPOINTS } from './api';
 import { LogoIcon } from './CustomIcons';
 import ColorModeSelect from './shared-theme/ColorModeSelect';
 
@@ -115,25 +116,19 @@ export default function SignUp(props) {
       password: data.get('password'),
     }
 
-    fetch('/Register',{
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'  
-        },
-        body: JSON.stringify(jsonData),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            console.log('Register successful');
-            window.location = '/Login'
-        } else {
-            console.log('Register failed')
-        }
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    })
+  axiosInstance.post(ENDPOINTS.REGISTER, jsonData)
+  .then(response => {
+    const data = response.data;
+    if (data.status === 'ok') {
+      console.log('Register successful');
+      window.location = '/Login'
+    } else {
+      console.log('Register failed')
+    }
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  })
   };
 
   return (

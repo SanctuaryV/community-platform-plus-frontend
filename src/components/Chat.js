@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
+import { axiosInstance, ENDPOINTS, SOCKET_URL } from '../api';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Tabs from '@mui/material/Tabs';
@@ -10,7 +11,8 @@ import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
-const socket = io('/'); // เชื่อมต่อกับ Socket.IO Server
+// Connect Socket.IO to configured backend base URL (or relative '/')
+const socket = io(SOCKET_URL); // เชื่อมต่อกับ Socket.IO Server
 
 export default function ChatTabs() {
   const [value, setValue] = useState(''); // ผู้ที่เราติดตามที่เลือก
@@ -21,20 +23,9 @@ export default function ChatTabs() {
 
   const getOrCreateRoom = async (userId, otherUserId) => {
     try {
-      const response = await fetch('/room', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId, otherUserId }), // ส่งข้อมูล userId และ otherUserId
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.roomId; // คืนค่า roomId ที่ได้หรือสร้างใหม่
-      } else {
-        console.error('Error getting or creating room:', response.statusText);
-      }
+  const response = await axiosInstance.post(ENDPOINTS.ROOM, { userId, otherUserId });
+  const data = response.data;
+  return data.roomId; // คืนค่า roomId ที่ได้หรือสร้างใหม่
     } catch (error) {
       console.error('Error fetching room:', error);
     }
@@ -45,27 +36,16 @@ export default function ChatTabs() {
       // ดึงข้อความเก่าจากฐานข้อมูลเมื่อเข้าห้องแชท
       async function fetchMessages() {
         try {
-          const response = await fetch('/messages', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ roomId })
-          });
+          const response = await axiosInstance.post(ENDPOINTS.MESSAGES, { roomId });
+          const data = response.data;
 
-          if (response.ok) {
-            const data = await response.json();
+          // แปลงเวลาทุกข้อความให้แสดงแค่ชั่วโมง:นาที และเปลี่ยน sender_id เป็น senderId
+          const updatedMessages = data.map(message => ({
+            ...message,
+            timestamp: new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          }));
 
-            // แปลงเวลาทุกข้อความให้แสดงแค่ชั่วโมง:นาที และเปลี่ยน sender_id เป็น senderId
-            const updatedMessages = data.map(message => ({
-              ...message,
-              timestamp: new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            }));
-
-            setMessages(updatedMessages); // เก็บข้อความที่แปลงเวลาแล้ว
-          } else {
-            console.error('Error fetching messages:', response.statusText);
-          }
+          setMessages(updatedMessages); // เก็บข้อความที่แปลงเวลาแล้ว
         } catch (error) {
           console.error('Error fetching messages:', error);
         }
@@ -78,9 +58,9 @@ export default function ChatTabs() {
 
   useEffect(() => {
     // Scroll to bottom when messages change
-    const messageContainer = document.getElementById('message-container');
-    if (messageContainer) {
-      messageContainer.scrollTop = messageContainer.scrollHeight; // เลื่อนข้อความไปยังด้านล่าง
+    const messageList = document.getElementById('message-list');
+    if (messageList) {
+      messageList.scrollTop = messageList.scrollHeight; // เลื่อนข้อความไปยังด้านล่าง
     }
   }, [messages]); // ทำการเลื่อนเมื่อ messages เปลี่ยนแปลง
 
@@ -92,21 +72,14 @@ export default function ChatTabs() {
       try {
         const userId = localStorage.getItem('user_id'); // ดึง userId จาก localStorage
 
-        const response = await fetch('/following', { // ส่งข้อมูลไปยัง /api/following
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userId }), // ส่ง userId ใน body ของ request
-        });
+  const response = await axiosInstance.post(ENDPOINTS.FOLLOWING, { userId });
 
-        // เช็คว่า response ถูกต้องหรือไม่
-        if (response.ok) {
-          const data = await response.json();
-          setFollowing(data); // เก็บข้อมูลที่ได้มาใน state
-        } else {
-          console.error('Error fetching following:', response.statusText);
-        }
+  const data = response.data;
+  setFollowing(data); // เก็บข้อมูลที่ได้มาใน state
+  // auto-select first contact when following list arrives
+  if (data && data.length > 0) {
+    setValue(String(data[0].userId));
+  }
       } catch (error) {
         console.error('Error fetching following:', error);
       }
@@ -152,6 +125,8 @@ export default function ChatTabs() {
   }, [roomId]); // เปลี่ยนการทำงานของ useEffect ตาม roomId แทน value
 
   const handleChange = async (event, newValue) => {
+    // If the same contact was clicked again, do nothing
+    if (newValue === value) return;
     setValue(newValue); // เปลี่ยนคนที่เลือกเป็น newValue (otherUserId)
 
     const userId = localStorage.getItem('user_id');
@@ -160,7 +135,6 @@ export default function ChatTabs() {
 
     if (room) {
       socket.emit('joinRoom', room); // เข้าร่วมห้องแชท
-      setMessages([]); // ล้างข้อความเก่าเมื่อเปลี่ยนคนที่เลือก
     }
   };
 
@@ -182,111 +156,90 @@ export default function ChatTabs() {
   // ดึง userId จาก localStorage
   const userId = localStorage.getItem('user_id');
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 315px)' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
       <CssBaseline />
-      <Container>
-        {/* Tabs แสดงคนที่เราติดตาม */}
-        <Tabs
-          value={value || false}
-          onChange={handleChange}
-          textColor="secondary"
-          indicatorColor="secondary"
-          aria-label="chat tabs"
-          variant="scrollable" // เปิดการเลื่อน
-          scrollButtons="auto" // เพิ่มปุ่มเลื่อนถ้าจำเป็น
-          sx={{
-            overflowX: 'auto', // เปิดการเลื่อนแนวนอน
-            whiteSpace: 'nowrap', // ป้องกันการบรรทัดใหม่
-          }}
-        >
-          {following.map((follow) => (
-            <Tab
-              key={follow.userId}
-              value={follow.userId}
-              sx={{
-                minWidth: '120px', // กำหนดความกว้างขั้นต่ำแต่ละ Tab
-                textAlign: 'center', // จัดข้อความให้อยู่กลาง
-              }}
-              label={
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Avatar
-                    alt={follow.name}
-                    src={follow.avatarUrl || ''}
-                  />
-                  <Typography variant="caption">{follow.name}</Typography>
-                </Box>
-              }
-            />
-          ))}
-        </Tabs>
-
-        {/* Messages Section */}
-        <Box
-          id="message-container"  // เพิ่ม id นี้เพื่ออ้างอิงใน useEffect
-          sx={{
-            flexGrow: 1,
-            padding: 2,
-            overflowY: 'auto',  // ให้สามารถเลื่อนข้อความได้
-            height: '435px', // ค่า default
-            '@media (max-width: 600px)': {
-              height: 'calc(100vh - 470px)', // ปรับความสูงสำหรับมือถือ
-            }
-          }}
-        >
-
-          {/* ถ้าไม่มีข้อความ ให้แสดงข้อความ 'No messages yet' */}
-          {messages.length === 0 ? (
-            <Typography variant="body1" sx={{ textAlign: 'center', marginTop: '20px', color: 'gray' }}>
-              No messages yet.
-            </Typography>
-          ) : (
-            messages.map((chat, index) => (
-              <Box
-                key={index}
-                sx={{
-                  display: 'flex',
-                  justifyContent: chat.senderId === userId ? 'flex-end' : 'flex-start',
-                  marginBottom: 3,
-                  position: 'relative',
-                }}
-              >
-                <Box
-                  sx={{
-                    border: '1px solid',
-                    borderRadius: '20px',
-                    padding: '10px 15px',
-                    maxWidth: '75%',
-                    position: 'relative',
-                  }}
-                >
-                  <Typography sx={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
-                    {chat.message} {/* ข้อความที่ส่ง */}
-                  </Typography>
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      bottom: '-23px',
-                      right: '10px',
-                      fontSize: '0.75rem',
-                      color: 'gray',
-                    }}
-                  >
-                    {chat.timestamp} {/* เวลา */}
+      <Container maxWidth={false} sx={{ display: 'flex', gap: 2, height: 'calc(100vh - 80px)', paddingTop: 2, paddingBottom: 2, overflow: 'hidden' }}>
+  {/* Left sidebar (contacts) */}
+  <Box sx={{ width: 220, minWidth: 180, bgcolor: 'background.paper', borderRadius: 1, p: 1, height: 'calc(100vh - 140px)', overflowY: 'auto' }}>
+          <Tabs
+            orientation="vertical"
+            value={value || false}
+            onChange={handleChange}
+            textColor="secondary"
+            indicatorColor="secondary"
+            aria-label="chat tabs"
+            variant="scrollable"
+            scrollButtons="auto"
+            sx={{ height: '100%', alignItems: 'flex-start' }}
+          >
+            {following.map((follow) => (
+              <Tab
+                key={follow.userId}
+                value={String(follow.userId)}
+                sx={{ alignItems: 'flex-start', textTransform: 'none', width: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                label={
+                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                    <Avatar alt={follow.name} src={follow.avatarUrl || ''} />
+                    <Box sx={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+                      <Typography variant="body2" sx={{ fontWeight: '600' }}>{follow.name}</Typography>
+                      <Typography variant="caption" color="text.secondary">{follow.lastMessage || ''}</Typography>
+                    </Box>
                   </Box>
-                </Box>
-              </Box>
-            ))
-          )}
+                }
+              />
+            ))}
+          </Tabs>
         </Box>
 
-        {/* Input ส่งข้อความ */}
-        <Box sx={{ display: 'flex', padding: 2, alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #ddd' }}>
+        {/* Right: chat column */}
+  <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, bgcolor: 'transparent', height: 'calc(100vh - 140px)' }}>
+          {/* Messages Section */}
+          <Box id="message-container" sx={{ flex: 1, p: 2, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            <Box id="message-list" sx={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', pb: 6 }}>
+
+              {/* wrapper so content sits at bottom when few messages, but scrolls when overflow */}
+              <Box id="messages-wrapper" sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 'auto', px: 1 }}>
+
+                {messages.length === 0 ? (
+                  <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', py: 2 }}>
+                    <Typography variant="body1" sx={{ textAlign: 'center', color: 'gray' }}>
+                      No messages yet.
+                    </Typography>
+                  </Box>
+                ) : (
+                  messages.map((chat, index) => (
+                    <Box key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: chat.senderId === userId ? 'flex-end' : 'flex-start' }}>
+                      <Box sx={{ display: 'flex', justifyContent: chat.senderId === userId ? 'flex-end' : 'flex-start', width: '100%' }}>
+                        <Box
+                          sx={{
+                            borderRadius: '20px',
+                            padding: '8px 14px',
+                            maxWidth: '65%',
+                            bgcolor: chat.senderId === userId ? 'primary.main' : 'background.paper',
+                            color: chat.senderId === userId ? 'primary.contrastText' : 'text.primary',
+                            boxShadow: chat.senderId === userId ? 3 : 0,
+                            display: 'inline-block',
+                          }}
+                        >
+                          <Typography sx={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word', lineHeight: 1.4 }}>
+                            {chat.message}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      {/* timestamp shown outside bubble, small and muted */}
+                      <Typography variant="caption" sx={{ color: 'gray', mt: 0.5, mb: 0.5, alignSelf: chat.senderId === userId ? 'flex-end' : 'flex-start' }}>
+                        {chat.timestamp}
+                      </Typography>
+                    </Box>
+                  ))
+                )}
+
+              </Box>
+            </Box>
+          </Box>
+
+          {/* Input ส่งข้อความ */}
+            <Box sx={{ display: 'flex', padding: 1.5, alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.08)', bgcolor: 'background.paper', position: 'sticky', bottom: 0, zIndex: 2, boxShadow: '0 -6px 20px rgba(0,0,0,0.6)' }}>
           <TextField
             label="Type a message"
             variant="standard"
@@ -307,6 +260,7 @@ export default function ChatTabs() {
           <Button variant="contained" color="primary" onClick={handleSendMessage}>
             Send
           </Button>
+          </Box>
         </Box>
       </Container>
     </Box>

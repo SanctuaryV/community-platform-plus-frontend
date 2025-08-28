@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button, TextField, Grid, Box, CircularProgress, Paper, Typography, IconButton, Alert } from '@mui/material';
+import { axiosInstance, ENDPOINTS } from '../api';
+import { Button, TextField, Grid, Box, CircularProgress, Paper, Typography, IconButton, Alert, Avatar } from '@mui/material';
 import { DeleteForever, AddPhotoAlternate, Edit, ThumbUp, ChatBubble, Send } from '@mui/icons-material';
 
 import { useParams } from 'react-router-dom';
@@ -16,7 +17,7 @@ export default function CommunityPage() {
     const [editingPost, setEditingPost] = useState(null);
     const [editedContent, setEditedContent] = useState('');
     const [editedImage, setEditedImage] = useState(null);
-    const [likes/*, setLikes*/] = useState({});
+    const [likes, setLikes] = useState({});
     const [comments, setComments] = useState({}); // Store comments for each post
     const [newComment, setNewComment] = useState({}); // Temp storage for adding a comment
 
@@ -25,21 +26,20 @@ export default function CommunityPage() {
     const fetchPosts = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await fetch(`/${communityId}`);
-            if (response.ok) {
-                const data = await response.json();
-                setPosts(data);
-                const commentsData = {};
+            // If backend exposes community posts at /:communityId, construct URL
+            const baseForCreatePost = ENDPOINTS.CREATEPOST.replace(/createPost$/, '');
+            const url = `${baseForCreatePost}${communityId}`;
+            const response = await axiosInstance.get(url);
+            const data = response.data;
+            setPosts(data);
+            const commentsData = {};
 
-                // Populate the comments state with post ID as the key
-                data.forEach(post => {
-                    commentsData[post.id] = post.comments;
-                });
+            // Populate the comments state with post ID as the key
+            data.forEach(post => {
+                commentsData[post.id] = post.comments;
+            });
 
-                setComments(commentsData); // Update the comments state
-            } else {
-                console.error('Error fetching posts');
-            }
+            setComments(commentsData); // Update the comments state
         } catch (error) {
             console.error('Error fetching posts:', error);
         } finally {
@@ -74,13 +74,9 @@ export default function CommunityPage() {
                 formData.append('image', image); // Add image to request if exists
             }
 
-            const response = await fetch('/createPost', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (response.ok) {
-                const newPost = await response.json();  // Receive full post data including user info
+            const response = await axiosInstance.post(ENDPOINTS.CREATEPOST, formData);
+            if (response.status === 200 || response.status === 201) {
+                const newPost = response.data;  // Receive full post data including user info
                 setPosts([newPost, ...posts]);  // Add the new post including name, avatar, date
                 setContent('');
                 setImage(null); // Reset image after post
@@ -102,13 +98,8 @@ export default function CommunityPage() {
     const handleDeletePost = async (postId) => {
         if (window.confirm('Are you sure you want to delete this post?')) {
             try {
-                const response = await fetch(`/deletePost`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ post_id: postId }),
-                });
-
-                if (response.ok) {
+                const response = await axiosInstance.post(ENDPOINTS.DELETEPOST, { post_id: postId });
+                if (response.status === 200) {
                     setPosts(posts.filter(post => post.id !== postId));
                     setAlertMessage('Post deleted successfully!');
                     setAlertSeverity('success');
@@ -148,13 +139,9 @@ export default function CommunityPage() {
                 formData.append('image', editedImage);
             }
 
-            const response = await fetch('/updatePost', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (response.ok) {
-                const data = await response.json();
+            const response = await axiosInstance.post(ENDPOINTS.UPDATEPOST, formData);
+            if (response.status === 200) {
+                const data = response.data;
                 console.log('Updated Post:', data);
 
                 // อัปเดต posts ใน state
@@ -213,42 +200,42 @@ export default function CommunityPage() {
         setEditedImage(null);  // Reset so that a new image can be uploaded
     };
 
-    // Handle Like Post
-    /*const handleLikePost = async (postId) => {
-        try {
-            const response = await fetch(`/addLike`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ post_id: postId, user_id: localStorage.getItem('user_id') }),
-            });
+    // Toggle Like Post: call addLike if not liked, removeLike if already liked
+    const handleToggleLike = async (postId) => {
+        const userId = localStorage.getItem('user_id');
+        if (!userId) return;
 
-            if (response.ok) {
-                const updatedLikes = await response.json();
-                setLikes((prev) => ({ ...prev, [postId]: updatedLikes.likes }));
+        try {
+            // Check local state to decide action; if likes[postId] exists and > 0 assume liked
+            const alreadyLiked = !!likes[postId];
+            const post = posts.find(p => p.id === postId);
+            const currentLikes = (likes[postId] ?? post?.like_count ?? 0);
+            if (!alreadyLiked) {
+                await axiosInstance.post(ENDPOINTS.ADDLIKE, { post_id: postId, user_id: userId });
+                // increment displayed count
+                setLikes((prev) => ({ ...prev, [postId]: currentLikes + 1 }));
+            } else {
+                await axiosInstance.post(ENDPOINTS.REMOVELIKE, { post_id: postId, user_id: userId });
+                setLikes((prev) => ({ ...prev, [postId]: Math.max(currentLikes - 1, 0) }));
             }
         } catch (error) {
-            console.error('Error liking post:', error);
+            console.error('Error toggling like:', error);
         }
-    };*/
+    };
 
     // Handle Add Comment
     const handleAddComment = async (postId) => {
         if (!newComment[postId]) return;
 
         try {
-            const response = await fetch(`/addComment`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    post_id: postId,
-                    user_id: localStorage.getItem('user_id'), // ดึง user_id จาก localStorage
-                    avatar_url: localStorage.getItem('avatar_url'), // ดึง avatar_url จาก localStorage
-                    content: newComment[postId], // คอมเมนต์ใหม่
-                }),
+            const response = await axiosInstance.post(ENDPOINTS.ADDCOMMENT, {
+                post_id: postId,
+                user_id: localStorage.getItem('user_id'),
+                avatar_url: localStorage.getItem('avatar_url'),
+                content: newComment[postId],
             });
-
-            if (response.ok) {
-                const comment = await response.json();
+            if (response.status === 200 || response.status === 201) {
+                const comment = response.data;
                 setComments((prev) => ({
                     ...prev,
                     [postId]: [...(prev[postId] || []), comment],
@@ -351,17 +338,13 @@ export default function CommunityPage() {
                             }}>
                                 {/* Display avatar and name */}
                                 <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
-                                    <img
-                                        src={post.avatar_url || 'default-avatar-url'}
-                                        alt="Avatar"
-                                        style={{
-                                            width: '40px',
-                                            height: '40px',
-                                            borderRadius: '50%',
-                                            objectFit: 'cover',
-                                            marginRight: '10px',
-                                        }}
-                                    />
+                                    <Avatar
+                                        src={post.avatar_url || undefined}
+                                        alt={post.name || 'Avatar'}
+                                        sx={{ width: 40, height: 40, marginRight: '10px' }}
+                                    >
+                                        {!post.avatar_url && (post.name ? post.name.charAt(0).toUpperCase() : String(post.user_id || '?').charAt(0))}
+                                    </Avatar>
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                                         {post.name || 'Anonymous'}
                                     </Typography>
@@ -476,11 +459,13 @@ export default function CommunityPage() {
 
                                                 return (
                                                     <Box key={index} sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
-                                                        <img
-                                                            src={comment.avatar_url}
+                                                        <Avatar
+                                                            src={comment.avatar_url || undefined}
                                                             alt={`Avatar of user ${comment.user_id}`}
-                                                            style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '8px' }}
-                                                        />
+                                                            sx={{ width: 30, height: 30, borderRadius: '50%', marginRight: '8px' }}
+                                                        >
+                                                            {!comment.avatar_url && String(comment.user_id || '?').charAt(0)}
+                                                        </Avatar>
                                                         <Typography variant="body2" sx={{ marginRight: 1 }}>
                                                             {comment.content} {/* Comment content */}
                                                         </Typography>
@@ -504,7 +489,7 @@ export default function CommunityPage() {
                                     <Box sx={{ display: 'flex', gap: 2 }}>
                                         {/* ปุ่มไลค์ */}
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <IconButton /*onClick={() => handleLikePost(post.id)}*/>
+                                            <IconButton onClick={() => handleToggleLike(post.id)}>
                                                 <ThumbUp />
                                             </IconButton>
                                             <Typography>{likes[post.id] || post.likes || 0} </Typography>

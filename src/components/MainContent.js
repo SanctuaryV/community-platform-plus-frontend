@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { axiosInstance } from '../api';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
 import { CircularProgress } from '@mui/material';
 
 export default function MainContent() {
@@ -12,7 +13,7 @@ export default function MainContent() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.post('/main'); // ดึงข้อมูลโพสต์จาก backend
+  const response = await axiosInstance.post('/main'); // ดึงข้อมูลโพสต์จาก backend
         setPosts(response.data);
         setIsLoading(false);
       } catch (error) {
@@ -55,17 +56,13 @@ export default function MainContent() {
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
-                <img
-                  src={post.avatar_url || 'default-avatar-url'}
-                  alt="Avatar"
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    marginRight: '10px',
-                  }}
-                />
+                <Avatar
+                  src={post.avatar_url || undefined}
+                  alt={post.name || 'Avatar'}
+                  sx={{ width: 40, height: 40, marginRight: '10px' }}
+                >
+                  {!post.avatar_url && (post.name ? post.name.charAt(0).toUpperCase() : String(post.user_id || '?').charAt(0))}
+                </Avatar>
                 <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                   {post.name || 'Anonymous'}
                 </Typography>

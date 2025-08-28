@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { axiosInstance, ENDPOINTS } from '../api';
 import { Button, TextField, Grid, Box, CircularProgress, Paper, IconButton, Typography, Alert } from '@mui/material';
 import { AddCircleOutline, DeleteForever } from '@mui/icons-material';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
@@ -16,20 +17,9 @@ export default function Community() {
   const fetchGroups = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/getgroups', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ action: 'fetch' }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setGroups(data);
-      } else {
-        console.error('Error fetching Communities');
-      }
+  const response = await axiosInstance.post(ENDPOINTS.GETGROUPS, { action: 'fetch' });
+      const data = response.data;
+      setGroups(data);
     } catch (error) {
       console.error('Error fetching Communities:', error);
     } finally {
@@ -47,25 +37,13 @@ export default function Community() {
 
     setCreating(true);
     try {
-      const response = await fetch('/creategroups', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, description, action: 'create' }),
-      });
-
-      if (response.ok) {
-        const newGroup = await response.json();
-        setGroups((prevGroups) => [...prevGroups, newGroup]);
-        setName('');
-        setDescription('');
-        setAlertMessage('Community created successfully!');
-        setAlertSeverity('success');
-      } else {
-        setAlertMessage('Error creating Community.');
-        setAlertSeverity('error');
-      }
+    const response = await axiosInstance.post(ENDPOINTS.CREATEGROUPS, { name, description, action: 'create' });
+      const newGroup = response.data;
+      setGroups((prevGroups) => [...prevGroups, newGroup]);
+      setName('');
+      setDescription('');
+      setAlertMessage('Community created successfully!');
+      setAlertSeverity('success');
     } catch (error) {
       setAlertMessage('Error creating Community.');
       setAlertSeverity('error');
@@ -78,22 +56,10 @@ export default function Community() {
   const handleDeleteGroup = async (groupId) => {
     if (window.confirm('Are you sure you want to delete this group?')) {
       try {
-        const response = await fetch('/deletegroup', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ groupId, action: 'delete' }),
-        });
-
-        if (response.ok) {
-          setGroups(groups.filter((group) => group.group_id !== groupId));
-          setAlertMessage('Community deleted successfully!');
-          setAlertSeverity('success');
-        } else {
-          setAlertMessage('Error deleting community.');
-          setAlertSeverity('error');
-        }
+      await axiosInstance.post(ENDPOINTS.DELETEGROUP, { groupId, action: 'delete' });
+        setGroups(groups.filter((group) => group.group_id !== groupId));
+        setAlertMessage('Community deleted successfully!');
+        setAlertSeverity('success');
       } catch (error) {
         setAlertMessage('Error deleting community.');
         setAlertSeverity('error');
