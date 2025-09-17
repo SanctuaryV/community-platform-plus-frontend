@@ -55,19 +55,24 @@ export default function EditProfile() {
         const file = e.target.files[0];
         if (file) {
             setFormData({ ...formData, avatar: file }); // เก็บไฟล์จริง
+        } else {
+            // If no file is selected (input cleared), do not change avatar
+            // Do nothing, keep current avatar
         }
     };
     
     const handleFormSubmit = async (e) => {
-        e.preventDefault();
+    e.preventDefault();
         const formDataToSubmit = new FormData();
         formDataToSubmit.append('name', formData.name);
         formDataToSubmit.append('email', formData.email);
         formDataToSubmit.append('age', formData.age ? formData.age : '0'); // ใช้ 0 ถ้าค่าว่าง
         formDataToSubmit.append('occupation', formData.occupation);
         formDataToSubmit.append('bio', formData.bio);
-    
-        if (formData.avatar) {
+        console.log('Submitting formData:', formDataToSubmit);
+
+        // Only append avatar if user selected a new file
+        if (formData.avatar instanceof File) {
             formDataToSubmit.append('avatar', formData.avatar);
         }
     
