@@ -1,10 +1,12 @@
-pipeline{
+pipeline {
     agent any
 
-    stage{
-        stage('Checkout Code'){
-             cleanWs()
-
+    stages {
+        stage('Checkout Code') {
+            steps {
+                cleanWs()
+                checkout scm
+            }
         }
     }
 }
