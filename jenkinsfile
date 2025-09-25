@@ -60,17 +60,27 @@ pipeline {
             }
         }
 
-            stage('Build Docker Image') {
+        stage('Build Docker Image') {
             steps {
-               {
+               
                     sh '''
                         echo "Building frontend Docker image..."
                         docker build --no-cache -t $IMAGE_NAME_FRONTEND:$IMAGE_TAG .
                         docker images | grep $IMAGE_NAME_FRONTEND
                     '''
-                }
+                
             }
         }
-    }
+
+//             stage('Clean up Docker Images Locally') {
+// //             steps {
+// //                 sh '''
+// //                     echo "Cleaning up Docker images..."
+// //                     docker rmi $IMAGE_NAME_BACKEND:$IMAGE_TAG || true
+// //                     docker rmi $DOCKER_REG_URL/$DOCKER_REG_NAME/$REG_REPO/$IMAGE_NAME_BACKEND:$IMAGE_TAG || true
+// //                     docker image prune -f
+// //                 '''
+// //             }
+     }
 }
 
