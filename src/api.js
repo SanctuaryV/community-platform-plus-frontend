@@ -34,4 +34,4 @@ const axiosInstance = axios.create({
   baseURL: API_BASE,
 });
 
-export { API_BASE, ENDPOINTS, axiosInstance, SOCKET_URL };
+ export { API_BASE, ENDPOINTS, axiosInstance, SOCKET_URL };
