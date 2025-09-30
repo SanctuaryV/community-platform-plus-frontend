@@ -14,6 +14,10 @@ pipeline {
         APP_REPO_BRANCH = "${params.REPO_BRANCH}"
         IMAGE_NAME_FRONTEND = "${params.IMAGE_NAME_FRONTEND}"
         IMAGE_TAG = "${BUILD_NUMBER}"
+
+        DOCKER_REG_URL      = "${params.DOCKER_REG_URL}"     // e.g. asia-southeast1-docker.pkg.dev
+        DOCKER_REG_NAME     = "${params.DOCKER_REG_NAME}"    // e.g. tdg-sec-non-prod-bnxe
+        REG_REPO            = "${params.REG_REPO}"           // e.g. docker-images
     }
 
     stages {
@@ -30,15 +34,6 @@ pipeline {
                 sh '''
                   echo "Installing depaendencies..."
                   npm install
-                '''
-            }
-        }
-
-        stage('Build Frontend') {
-            steps {
-                sh '''
-                  echo "Building frontend..."
-                  npm run build
                 '''
             }
         }
@@ -69,6 +64,25 @@ pipeline {
                         docker images | grep $IMAGE_NAME_FRONTEND
                     '''
                 
+            }
+        }
+
+                stage('Push Image to GAR') {
+            when {
+                expression { return params.PushToGar == true }
+            }
+            steps {
+                withCredentials([file(credentialsId: 'GCP-GAR', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    sh '''
+                        echo "Authenticating with GCP..."
+                        gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
+                        gcloud auth configure-docker $DOCKER_REG_URL
+
+                        echo "Tagging and pushing frontend image to GAR..."
+                        docker tag $IMAGE_NAME_FRONTEND:$IMAGE_TAG $DOCKER_REG_URL/$DOCKER_REG_NAME/$REG_REPO:$IMAGE_TAG
+                        docker push $DOCKER_REG_URL/$DOCKER_REG_NAME/$REG_REPO:$IMAGE_TAG
+                    '''
+                }
             }
         }
 
