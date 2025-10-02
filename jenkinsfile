@@ -7,9 +7,6 @@ pipeline {
         string(name: 'REPO_BRANCH', defaultValue: 'main', description: 'Branch to checkout')
         string(name: 'IMAGE_NAME_FRONTEND', defaultValue: 'community-platform-plus-frontend', description: 'docker image name')
         string(name: 'N8N_WEBHOOK_URL', defaultValue: 'https://35.247.160.122:5678/webhook/627982e1-ee55-4a89-a91a-901e8436b313', description: 'n8n Production Webhook URL')
-        string(name: 'DOCKER_REG_URL', defaultValue: '', description: 'Docker registry URL')
-        string(name: 'DOCKER_REG_NAME', defaultValue: '', description: 'Docker registry name')
-        string(name: 'REG_REPO', defaultValue: '', description: 'Registry repository')
         booleanParam(name: 'Run_Checkmarx', defaultValue: false, description: 'Run Checkmarx scan')
         booleanParam(name: 'PushToGar', defaultValue: false, description: 'Push to Google Artifact Registry')
     }
@@ -97,10 +94,12 @@ pipeline {
                     echo "Cleaning up Docker images..."
                     docker rmi $IMAGE_NAME_BACKEND:$IMAGE_TAG || true
                     docker rmi $DOCKER_REG_URL/$DOCKER_REG_NAME/$REG_REPO/$IMAGE_NAME_BACKEND:$IMAGE_TAG || true
+
                     docker image prune -f
                 '''
             }
      }
+    }
 
     post {
         always {
@@ -162,4 +161,3 @@ pipeline {
         }
     }
 }
-
