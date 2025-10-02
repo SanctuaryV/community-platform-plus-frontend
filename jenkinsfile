@@ -82,7 +82,7 @@ pipeline {
 
                         echo "Tagging and pushing frontend image to GAR..."
                         docker tag $IMAGE_NAME_FRONTEND:$IMAGE_TAG $DOCKER_REG_URL/$DOCKER_REG_NAME/$REG_REPO:$IMAGE_TAG
-                        docker push $DOCKER_REG_URL/$DOCKER_REG_NAME/$REG_REPO/$IMAGE_NAME_FRONTEND:$IMAGE_TAG
+                        docker push $DOCKER_REG_URL/$DOCKER_REG_NAME/$REG_REPO:$IMAGE_TAG
                     '''
                 }
             }
