@@ -91,15 +91,15 @@ pipeline {
             }
         }
 
-//             stage('Clean up Docker Images Locally') {
-// //             steps {
-// //                 sh '''
-// //                     echo "Cleaning up Docker images..."
-// //                     docker rmi $IMAGE_NAME_BACKEND:$IMAGE_TAG || true
-// //                     docker rmi $DOCKER_REG_URL/$DOCKER_REG_NAME/$REG_REPO/$IMAGE_NAME_BACKEND:$IMAGE_TAG || true
-// //                     docker image prune -f
-// //                 '''
-// //             }
+            stage('Clean up Docker Images Locally') {
+            steps {
+                sh '''
+                    echo "Cleaning up Docker images..."
+                    docker rmi $IMAGE_NAME_BACKEND:$IMAGE_TAG || true
+                    docker rmi $DOCKER_REG_URL/$DOCKER_REG_NAME/$REG_REPO/$IMAGE_NAME_BACKEND:$IMAGE_TAG || true
+                    docker image prune -f
+                '''
+            }
      }
 
     post {
