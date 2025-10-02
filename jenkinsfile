@@ -6,7 +6,12 @@ pipeline {
         string(name: 'REPO_URL', defaultValue: 'https://github.com/SanctuaryV/community-platform-plus-frontend.git', description: 'Git repo URL')
         string(name: 'REPO_BRANCH', defaultValue: 'main', description: 'Branch to checkout')
         string(name: 'IMAGE_NAME_FRONTEND', defaultValue: 'community-platform-plus-frontend', description: 'docker image name')
+        string(name: 'N8N_WEBHOOK_URL', defaultValue: 'https://35.247.160.122:5678/webhook/627982e1-ee55-4a89-a91a-901e8436b313', description: 'n8n Production Webhook URL')
+        string(name: 'DOCKER_REG_URL', defaultValue: '', description: 'Docker registry URL')
+        string(name: 'DOCKER_REG_NAME', defaultValue: '', description: 'Docker registry name')
+        string(name: 'REG_REPO', defaultValue: '', description: 'Registry repository')
         booleanParam(name: 'Run_Checkmarx', defaultValue: false, description: 'Run Checkmarx scan')
+        booleanParam(name: 'PushToGar', defaultValue: false, description: 'Push to Google Artifact Registry')
     }
 
     environment {
@@ -96,5 +101,65 @@ pipeline {
 // //                 '''
 // //             }
      }
+
+    post {
+        always {
+            script {
+                def jobResult = currentBuild.result ?: 'SUCCESS'
+                def failedStage = 'None'
+                
+                if (jobResult != 'SUCCESS') {
+                    failedStage = env.STAGE_NAME ?: 'Unknown Stage'
+                }
+
+                def bangkokTimeZone = TimeZone.getTimeZone('Asia/Bangkok')
+                def dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                dateFormat.setTimeZone(bangkokTimeZone)
+                
+                def payload = [
+                    jobName: env.JOB_NAME,
+                    buildNumber: env.BUILD_NUMBER,
+                    jobResult: jobResult,
+                    isSuccess: jobResult == 'SUCCESS',
+                    triggeredBy: currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')?.get(0)?.userId ?: 'System',
+                    startTime: dateFormat.format(new Date(currentBuild.startTimeInMillis)),
+                    endTime: dateFormat.format(new Date()),
+                    duration: currentBuild.durationString,
+                    failedStage: failedStage,
+                    timezone: 'Asia/Bangkok',
+                    repository: [
+                        url: params.REPO_URL,
+                        branch: params.REPO_BRANCH
+                    ],
+                    buildUrl: env.BUILD_URL,
+                    parameters: [
+                        imageName: params.IMAGE_NAME_FRONTEND,
+                        runCheckmarx: params.Run_Checkmarx,
+                        pushToGar: params.PushToGar
+                    ]
+                ]
+
+                try {
+                    httpRequest(
+                        httpMode: 'POST',
+                        url: params.N8N_WEBHOOK_URL,
+                        contentType: 'APPLICATION_JSON',
+                        requestBody: groovy.json.JsonOutput.toJson(payload),
+                        timeout: 30,
+                        ignoreSslErrors: true,
+                        acceptType: 'APPLICATION_JSON',
+                        validResponseCodes: '200:299',
+                        quiet: false
+                    )
+                    echo "✅ Frontend webhook sent to n8n (self-signed SSL) successfully"
+                } catch (Exception e) {
+                    echo "❌ Failed to send frontend webhook to n8n: ${e.getMessage()}"
+                    if (e.getMessage().contains('SSL') || e.getMessage().contains('certificate')) {
+                        echo "Note: This appears to be an SSL certificate issue with self-signed certificates"
+                    }
+                }
+            }
+        }
+    }
 }
 
