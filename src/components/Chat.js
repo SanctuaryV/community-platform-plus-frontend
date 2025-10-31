@@ -12,7 +12,11 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
 // Connect Socket.IO to configured backend base URL (or relative '/')
-const socket = io(SOCKET_URL); // เชื่อมต่อกับ Socket.IO Server
+const socket = io('/', {
+  path: '/socket.io',
+  transports: ['websocket','polling'],
+  withCredentials: true,
+}); // เชื่อมต่อกับ Socket.IO Server
 
 export default function ChatTabs() {
   const [value, setValue] = useState(''); // ผู้ที่เราติดตามที่เลือก
