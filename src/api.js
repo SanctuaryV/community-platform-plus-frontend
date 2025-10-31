@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL (can be empty to keep relative requests for CRA proxy)
-const API_BASE = process.env.REACT_APP_API_URL || '/api';
+const API_BASE = process.env.REACT_APP_API_URL || '/';
 
 // Per-endpoint env vars (if set, they override the default API_BASE + path)
 const ENDPOINTS = {
@@ -28,7 +28,7 @@ const ENDPOINTS = {
   UNFOLLOW: process.env.REACT_APP_API_UNFOLLOW || `${API_BASE}/unfollow`,
 };
 
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || API_BASE || '/';
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || API_BASE || '/socket.io';
 
 const axiosInstance = axios.create({
   baseURL: API_BASE,
