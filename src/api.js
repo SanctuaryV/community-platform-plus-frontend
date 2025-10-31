@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL (can be empty to keep relative requests for CRA proxy)
-const API_BASE = process.env.REACT_APP_API_URL || '';
+const API_BASE = process.env.REACT_APP_API_URL || '/api';
 
 // Per-endpoint env vars (if set, they override the default API_BASE + path)
 const ENDPOINTS = {
