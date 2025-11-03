@@ -119,7 +119,7 @@ pipeline {
             }
         }
 
-            stage('Clean up Docker Images Locally') {
+        stage('Clean up Docker Images Locally') {
             steps {
                 sh '''
                     echo "Cleaning up Docker images..."
@@ -128,8 +128,7 @@ pipeline {
                     docker image prune -f
                 '''
             }
-     }
-    }
+        }
 
         stage('Send to n8n') {
             steps {
@@ -317,5 +316,4 @@ pipeline {
             }
         }
     }
-}
 }
