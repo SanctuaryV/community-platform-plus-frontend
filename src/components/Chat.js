@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
-import { axiosInstance, ENDPOINTS, SOCKET_URL } from '../api';
+import { axiosInstance, ENDPOINTS} from '../api';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Tabs from '@mui/material/Tabs';
