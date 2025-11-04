@@ -23,6 +23,11 @@ pipeline {
     }
 
     stages {
+        stage('Checkout SCM (Jenkinsfile)') {
+            steps {
+        checkout scm
+            }
+        }
         stage('Clone Repository') {
             steps {
                 cleanWs()
