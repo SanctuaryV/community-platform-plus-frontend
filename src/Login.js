@@ -18,6 +18,7 @@ import AppTheme from './shared-theme/AppTheme';
 import { axiosInstance, ENDPOINTS } from './api';
 import ColorModeSelect from './shared-theme/ColorModeSelect';
 import Alert from '@mui/material/Alert';
+import Logger from './utils/logger';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -80,34 +81,47 @@ export default function SignIn(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        Logger.component('Login', 'Form submitted');
+        
         if (emailError || passwordError) {
+            Logger.error('Login', 'Validation failed', { emailError, passwordError });
             return;
         }
+        
         const data = new FormData(event.currentTarget);
         const jsonData = {
             email: data.get('email'),
             password: data.get('password'),
         }
+        
+        Logger.auth('Attempting login', { email: jsonData.email });
 
         axiosInstance.post(ENDPOINTS.LOGIN, jsonData)
             .then(response => {
                 const data = response.data;
                 if (data.status === 'ok') {
-                    console.log('Login successful');
+                    Logger.success('Login', 'Login successful', { 
+                        user_id: data.id_user, 
+                        name: data.name, 
+                        email: data.email 
+                    });
+                    
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('avatar_url', data.avatar_url);
                     localStorage.setItem('user_id', data.id_user);
                     localStorage.setItem('name', data.name);
                     localStorage.setItem('email', data.email);
                     localStorage.setItem('created', data.created);
+                    
+                    Logger.navigation('Login', 'Home');
                     window.location = '/';
                 } else {
-                    console.log('Login failed');
+                    Logger.error('Login', 'Login failed', data.message);
                     setErrorMessage('Invalid email or password'); // Set the error message
                 }
             })
             .catch((error) => {
-                console.error('Error:', error);
+                Logger.error('Login', 'API error', error);
                 setErrorMessage('An error occurred. Please try again later.'); // Handle error
             });
     };
