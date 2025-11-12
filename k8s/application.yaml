@@ -16,9 +16,3 @@ spec:
     automated:
       prune: true      # remove resources no longer defined in Git
       selfHeal: true   # make cluster match Git automatically
-    retry:
-      limit: 5
-      backoff:
-        duration: "5s"
-        factor: 2
-        maxDuration: "3m"
