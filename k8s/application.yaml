@@ -2,17 +2,25 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: community-platform-frontend
-  namespace: communities-platform-argo
+  namespace: argocd
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/SanctuaryV/community-platform-plus-frontend.git'
-    targetRevision: mains.
-  path: 'k8s'
+    repoURL: https://github.com/SanctuaryV/community-platform-plus-frontend.git
+    targetRevision: main
+    path: k8s
   destination:
-    server: 'https://kubernetes.default.svc'
+    server: https://kubernetes.default.svc
     namespace: communities-platform-argo
   syncPolicy:
     automated:
-      prune: true      # remove resources no longer defined in Git
-      selfHeal: true   # make cluster match Git automatically
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
