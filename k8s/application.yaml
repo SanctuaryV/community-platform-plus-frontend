@@ -7,7 +7,7 @@ spec:
   project: community-platform-intern
   source:
     repoURL: https://github.com/SanctuaryV/community-platform-plus-frontend.git
-    targetRevision: main
+    targetRevision: k8s
     path: k8s
   destination:
     server: https://kubernetes.default.svc
