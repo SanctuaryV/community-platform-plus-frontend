@@ -1,19 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: communities-platform-frontend
-  namespace: communities-platform-argo
+  name: frontend
   labels:
-    app: communities-platform-frontend
+    app: communities-platform-argo
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: communities-platform-frontend
+      app: communities-platform-argo
   template:
     metadata:
       labels:
-        app: communities-platform-frontend
+        app: communities-platform-argo
     spec:
       containers:
         - name: frontend
