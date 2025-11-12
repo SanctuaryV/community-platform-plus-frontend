@@ -2,14 +2,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: community-platform-frontend
+  namespace: communities-platform-argo
   labels:
     app: community-platform-frontend
 spec:
-  type: LoadBalancer
+  type: LoadBalancer     # << เปลี่ยนจาก ClusterIP
   selector:
     app: community-platform-frontend
   ports:
     - name: http
-      protocol: TCP
-      port: 80
-      targetPort: 3000
+      port: 80           # พอร์ตที่ให้คนข้างนอกเรียกเข้า
+      targetPort: 80     # พอร์ตใน container (nginx)

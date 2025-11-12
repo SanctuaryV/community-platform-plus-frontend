@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: community-platform-frontend
+  namespace: communities-platform-argo
   labels:
     app: community-platform-frontend
 spec:
@@ -16,30 +17,32 @@ spec:
     spec:
       containers:
         - name: frontend
-          # Replace with your built image (registry/repo:tag)
-          image: 'asia-southeast1-docker.pkg.dev/tdg-sec-non-prod-bnxe/community-platform-plus/community-platform-plus-frontend:54'
-          imagePullPolicy: Always
-          imagePullSecrets:
-          - name: gcp-artifact-secret
+          image: asia-southeast1-docker.pkg.dev/tdg-sec-non-prod-bnxe/community-platform-plus/community-platform-plus-frontend:54
           ports:
-            - containerPort: 3000
+            - containerPort: 80
+          startupProbe:
+            httpGet:
+              path: /
+              port: 80
+            failureThreshold: 30
+            periodSeconds: 2
           readinessProbe:
             httpGet:
               path: /
-              port: 3000
-            initialDelaySeconds: 5
-            periodSeconds: 5
+              port: 80
+            periodSeconds: 10
+            failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /
-              port: 3000
-            initialDelaySeconds: 15
-            periodSeconds: 20
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
           resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
             limits:
               cpu: "500m"
               memory: "256Mi"
-            requests:
-              cpu: "200m"
-              memory: "128Mi"
-          
