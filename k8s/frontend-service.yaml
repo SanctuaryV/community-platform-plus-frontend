@@ -5,7 +5,7 @@ metadata:
   labels:
     app: community-platform-frontend
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: community-platform-frontend
   ports:
