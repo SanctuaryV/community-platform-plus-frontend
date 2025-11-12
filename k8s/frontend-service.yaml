@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: community-platform-frontend
+  labels:
+    app: community-platform-frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: community-platform-frontend
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 3000

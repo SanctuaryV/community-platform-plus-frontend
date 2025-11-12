@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: community-platform-frontend
+  labels:
+    app: community-platform-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: community-platform-frontend
+  template:
+    metadata:
+      labels:
+        app: community-platform-frontend
+    spec:
+      containers:
+        - name: frontend
+          # Replace with your built image (registry/repo:tag)
+          image: 'asia-southeast1-docker.pkg.dev/tdg-sec-non-prod-bnxe/community-platform-plus/community-platform-plus-frontend:54'
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "200m"
+              memory: "128Mi"
+          imagePullSecrets:
+          - name: gcp-artifact-secret
