@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: communities-platform-frontend
   labels:
-    app: communities-platform-frontend
+    app: communities-platform-argo     # ⬅ ให้ตรงกับ Deployment
 spec:
-  type: LoadBalancer     # << เปลี่ยนจาก ClusterIP
+  type: LoadBalancer
   selector:
-    app: communities-platform-frontend
+    app: communities-platform-argo     # ⬅ ให้ตรงกัน
   ports:
     - name: http
-      port: 80           # พอร์ตที่ให้คนข้างนอกเรียกเข้า
-      targetPort: 80     # พอร์ตใน container (nginx)
+      port: 80
+      targetPort: 80
