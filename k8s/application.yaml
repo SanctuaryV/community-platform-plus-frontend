@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: communities-platform-plus-frontend
+  name: community-platform-plus-frontend
   namespace: communities-platform-argo
 spec:
   project: default
