@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: community-platform-ingress
+  namespace: communities-platform-argo
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: communities-platform-backend
+                port:
+                  number: 80
+          - path: /?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: community-platform-frontend
+                port:
+                  number: 80
