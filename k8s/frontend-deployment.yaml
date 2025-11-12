@@ -19,6 +19,8 @@ spec:
           # Replace with your built image (registry/repo:tag)
           image: 'asia-southeast1-docker.pkg.dev/tdg-sec-non-prod-bnxe/community-platform-plus/community-platform-plus-frontend:54'
           imagePullPolicy: Always
+          imagePullSecrets:
+          - name: gcp-artifact-secret
           ports:
             - containerPort: 3000
           readinessProbe:
@@ -40,5 +42,4 @@ spec:
             requests:
               cpu: "200m"
               memory: "128Mi"
-          imagePullSecrets:
-          - name: gcp-artifact-secret
+          
