@@ -23,17 +23,14 @@ spec:
           image: asia-southeast1-docker.pkg.dev/tdg-sec-non-prod-bnxe/community-platform-plus/community-platform-plus-frontend:11
           ports:
             - containerPort: 80
-          startupProbe:
-            httpGet: { path: /, port: 80 }
-            failureThreshold: 30
-            periodSeconds: 2
           readinessProbe:
             httpGet: { path: /, port: 80 }
+            initialDelaySeconds: 10
             periodSeconds: 5
             failureThreshold: 3
           livenessProbe:
             httpGet: { path: /, port: 80 }
-            initialDelaySeconds: 20
+            initialDelaySeconds: 30
             periodSeconds: 10
           resources:
             requests: { cpu: "100m", memory: "128Mi" }
