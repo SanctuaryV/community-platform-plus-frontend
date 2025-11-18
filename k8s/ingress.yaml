@@ -16,6 +16,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: frontend
+                name: communities-platform-frontend
                 port:
                   number: 80
